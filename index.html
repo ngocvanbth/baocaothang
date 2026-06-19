@@ -159,95 +159,11 @@
         tr { page-break-inside: avoid; }
         .signature-block { display: flex; justify-content: flex-end; margin-top: 30px; page-break-inside: avoid; }
         .signature-content { text-align: center; font-size: 14px; }
-        .pdf-exporting .table-print { font-size: 9.5px !important; }
-        .pdf-exporting .table-print th, .pdf-exporting .table-print td { padding: 3px 1px !important; }
+        .pdf-exporting .table-print { font-size: 8.8px !important; }
+        .pdf-exporting .table-print th, .pdf-exporting .table-print td { padding: 2px 1px !important; }
         .pdf-exporting .print-header { font-size: 12px; }
-        .pdf-exporting .report-title { font-size: 14px; }
-
-
-        /* === CHUÔNG NHẮC XUẤT EXCEL CUỐI THÁNG === */
-        @keyframes bellShake {
-            0%, 100% { transform: rotate(0deg); }
-            10%, 30%, 50%, 70%, 90% { transform: rotate(-12deg); }
-            20%, 40%, 60%, 80% { transform: rotate(12deg); }
-        }
-        @keyframes bellPulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.65); }
-            70% { box-shadow: 0 0 0 14px rgba(255, 193, 7, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-        }
-        .month-end-reminder {
-            position: fixed;
-            right: 22px;
-            bottom: 22px;
-            z-index: 3000;
-            font-size: 0.92rem;
-        }
-        .month-end-bell {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, #ffca2c, #fd7e14);
-            color: #fff;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
-            animation: bellPulse 1.8s infinite;
-        }
-        .month-end-bell .bell-icon {
-            display: inline-block;
-            animation: bellShake 1.4s ease-in-out infinite;
-            transform-origin: 50% 0%;
-        }
-        .month-end-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #dc3545;
-            color: #fff;
-            font-size: 0.78rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #fff;
-        }
-        .month-end-card {
-            position: absolute;
-            right: 0;
-            bottom: 72px;
-            width: 360px;
-            max-width: calc(100vw - 32px);
-            background: #fff;
-            border: 1px solid rgba(253, 126, 20, 0.35);
-            border-left: 6px solid #fd7e14;
-            border-radius: 12px;
-            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
-            padding: 14px;
-        }
-        .month-end-card::after {
-            content: "";
-            position: absolute;
-            right: 22px;
-            bottom: -10px;
-            border-width: 10px 10px 0 10px;
-            border-style: solid;
-            border-color: #fff transparent transparent transparent;
-        }
-        .month-end-card-title {
-            color: #fd7e14;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
+        .pdf-exporting .report-title { font-size: 14px; margin: 10px 0 12px 0 !important; }
+        .pdf-exporting .b-title { margin: 14px 0 8px 0 !important; }
     </style>
 </head>
 <body>
@@ -256,25 +172,8 @@
     <div class="title-marquee"><h2 class="dynamic-title text-uppercase">HỆ THỐNG QUẢN LÝ BỆNH NHÂN KHOA TRUYỀN NHIỄM</h2></div>
     <div class="copyright-banner">
         © Phần mềm được thiết kế và phát triển bởi Đặng Ngọc Văn
-        <small>Phiên bản: 1.0.4 | TTYT Lâm Đồng - Khu vực Hàm Thuận Bắc</small>
+        <small>Phiên bản: 1.0.1 | TTYT Lâm Đồng - Khu vực Hàm Thuận Bắc</small>
     </div>
-
-    <div id="monthEndReminder" class="month-end-reminder d-none">
-        <button type="button" class="month-end-bell" onclick="toggleMonthEndReminder()" title="Nhắc xuất Excel cuối tháng" aria-label="Nhắc xuất Excel cuối tháng">
-            <span class="bell-icon">🔔</span>
-            <span class="month-end-badge">!</span>
-        </button>
-        <div id="monthEndReminderCard" class="month-end-card d-none">
-            <div class="month-end-card-title">🔔 Nhắc xuất Excel cuối tháng</div>
-            <div>Hôm nay là <b id="monthEndReminderDate"></b>, ngày cuối cùng của tháng. Nhớ xuất file Excel về lưu trước khi chốt báo cáo, kẻo cuối tháng dữ liệu chạy như tiền lẻ trong ngăn kéo.</div>
-            <div class="d-flex gap-2 flex-wrap mt-3">
-                <button type="button" class="btn btn-success btn-sm fw-semibold" onclick="exportMonthlyListFromReminder()">Xuất Excel danh sách</button>
-                <button type="button" class="btn btn-warning btn-sm fw-semibold text-white" onclick="exportMonthlyReportFromReminder()">Xuất Excel báo cáo</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="dismissMonthEndReminder()">Ẩn hôm nay</button>
-            </div>
-        </div>
-    </div>
-
     
     <ul class="nav nav-tabs mt-3" id="appTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button" id="nav-tab1">1. Nhập thông tin</button></li>
@@ -733,90 +632,6 @@
         return parts;
     }
 
-
-
-    /* ================= CHUÔNG NHẮC XUẤT EXCEL CUỐI THÁNG ================= */
-    function getLocalDateKey(date = new Date()) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-    }
-
-    function getFirstDayKeyOfMonth(date = new Date()) {
-        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        return getLocalDateKey(firstDay);
-    }
-
-    function isLastDayOfMonth(date = new Date()) {
-        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-        return date.getDate() === lastDay;
-    }
-
-    function initMonthEndReminder() {
-        const box = document.getElementById('monthEndReminder');
-        if (!box) return;
-
-        const today = new Date();
-        const todayKey = getLocalDateKey(today);
-        const dismissedKey = localStorage.getItem('month_end_excel_reminder_dismissed');
-        const dateLabel = document.getElementById('monthEndReminderDate');
-        if (dateLabel) dateLabel.innerText = formatDate24h(todayKey);
-
-        if (isLastDayOfMonth(today)) {
-            box.classList.remove('d-none');
-            if (dismissedKey !== todayKey) {
-                const card = document.getElementById('monthEndReminderCard');
-                if (card) card.classList.remove('d-none');
-            }
-        } else {
-            box.classList.add('d-none');
-        }
-    }
-
-    function toggleMonthEndReminder(forceOpen = null) {
-        const card = document.getElementById('monthEndReminderCard');
-        if (!card) return;
-        if (forceOpen === true) card.classList.remove('d-none');
-        else if (forceOpen === false) card.classList.add('d-none');
-        else card.classList.toggle('d-none');
-    }
-
-    function dismissMonthEndReminder() {
-        localStorage.setItem('month_end_excel_reminder_dismissed', getLocalDateKey(new Date()));
-        const box = document.getElementById('monthEndReminder');
-        if (box) box.classList.add('d-none');
-    }
-
-    function setCurrentMonthRangeForExport() {
-        const today = new Date();
-        const firstDay = getFirstDayKeyOfMonth(today);
-        const todayKey = getLocalDateKey(today);
-
-        if (document.getElementById('filterTuNgay')) document.getElementById('filterTuNgay').value = firstDay;
-        if (document.getElementById('filterDenNgay')) document.getElementById('filterDenNgay').value = todayKey;
-        if (document.getElementById('repTuNgay')) document.getElementById('repTuNgay').value = firstDay;
-        if (document.getElementById('repDenNgay')) document.getElementById('repDenNgay').value = todayKey;
-
-        renderList();
-        generateReport();
-    }
-
-    function exportMonthlyListFromReminder() {
-        setCurrentMonthRangeForExport();
-        const tab = document.getElementById('nav-tab2');
-        if (tab) tab.click();
-        setTimeout(() => exportExcelList(), 200);
-    }
-
-    function exportMonthlyReportFromReminder() {
-        setCurrentMonthRangeForExport();
-        const tab = document.getElementById('nav-tab3');
-        if (tab) tab.click();
-        setTimeout(() => exportExcelReport(), 200);
-    }
-
-
     document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         const dStr = today.toISOString().split('T')[0];
@@ -831,7 +646,6 @@
         localStorage.setItem('ht_patients_v5', JSON.stringify(patients));
         renderICDs(); renderList(); generateReport();
         initFirebaseSync();
-        initMonthEndReminder();
     });
 
     function formatCapitalizeWords(input) {
@@ -1312,16 +1126,7 @@
         reader.readAsArrayBuffer(file);
     }
 
-    function appendPdfFooter(pdf) {
-        const totalPages = pdf.internal.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.setFontSize(9);
-            pdf.setTextColor(100);
-            pdf.text('Phần mềm Quản lý Bệnh nhân Khoa Truyền nhiễm', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 0.4, { align: 'center' });
-            pdf.text('Thiết kế và phát triển: Đặng Ngọc Văn - TTYT Lâm Đồng - KV Hàm Thuận Bắc', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 0.25, { align: 'center' });
-        }
-    }
+    // Đã bỏ footer PDF vì jsPDF không hiển thị đúng tiếng Việt có dấu trong dòng bản quyền.
 
     function exportPDFList() {
         const el = document.getElementById('printListArea');
@@ -1336,10 +1141,9 @@
         el.classList.add('pdf-list-exporting'); 
         
         html2pdf().set({
-            margin: [0.2, 0.2, 0.6, 0.2], filename: 'Danh_Sach_Benh_Nhan.pdf', image: { type: 'jpeg', quality: 1 },
+            margin: [0.2, 0.2, 0.25, 0.2], filename: 'Danh_Sach_Benh_Nhan.pdf', image: { type: 'jpeg', quality: 1 },
             html2canvas: { scale: 1.5, useCORS: true, windowWidth: 1500 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }, pagebreak: { mode: ['css', 'legacy'] }
         }).from(el).toPdf().get('pdf').then(pdf => {
-            appendPdfFooter(pdf);
             el.classList.remove('pdf-list-exporting'); el.classList.add('table-responsive-sticky', 'border');
             document.getElementById('listPdfTitle').classList.add('d-none'); document.querySelectorAll('.no-print').forEach(e => e.style.display = '');
         }).save();
@@ -1467,11 +1271,10 @@
     function exportPDFReport() {
         const el = document.getElementById('printReportArea'); el.classList.add('pdf-exporting'); 
         html2pdf().set({ 
-            margin: [0.3, 0.2, 0.6, 0.2], filename: `BaoCao_TruyenNhiem_${document.getElementById('repTuNgay').value}.pdf`, 
+            margin: [0.25, 0.2, 0.25, 0.2], filename: `BaoCao_TruyenNhiem_${document.getElementById('repTuNgay').value}.pdf`, 
             image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, 
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } 
         }).from(el).toPdf().get('pdf').then(pdf => {
-            appendPdfFooter(pdf);
             el.classList.remove('pdf-exporting'); 
         }).save();
     }
