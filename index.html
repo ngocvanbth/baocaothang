@@ -172,7 +172,7 @@
     <div class="title-marquee"><h2 class="dynamic-title text-uppercase">HỆ THỐNG QUẢN LÝ BỆNH NHÂN KHOA TRUYỀN NHIỄM</h2></div>
     <div class="copyright-banner">
         © Phần mềm được thiết kế và phát triển bởi Đặng Ngọc Văn
-        <small>Phiên bản: 1.0.1 | TTYT Lâm Đồng - Khu vực Hàm Thuận Bắc</small>
+        <small>Phiên bản: 1.0.7 | TTYT Lâm Đồng - Khu vực Hàm Thuận Bắc</small>
     </div>
     
     <ul class="nav nav-tabs mt-3" id="appTabs" role="tablist">
@@ -264,11 +264,19 @@
                     <h5 class="text-tab1 mt-4 mb-3 fw-bold border-tab1 pb-2">Chẩn đoán & Cận lâm sàng</h5>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Mã bệnh ICD-10 & Tên bệnh (Gõ 1-2 ký tự để tìm)</label>
+                            <label class="form-label fw-semibold">Mã bệnh ICD-10 & Tên bệnh</label>
                             <div class="icd-wrapper">
-                                <input type="text" class="form-control" id="maICD" placeholder="Nhập mã hoặc tên bệnh (vd: A09, tieu chay...)" autocomplete="off">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="maICD" placeholder="Nhập mã hoặc tên bệnh (vd: A09, tieu chay...)" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-primary fw-bold" id="btnQuickAddICD" onclick="openAddICDModalFromSearch()">+ Thêm mới</button>
+                                </div>
                                 <ul class="icd-dropdown" id="icdSuggestions"></ul>
                             </div>
+                            <div id="icdQuickAddBox" class="mt-2 d-none">
+                                <button type="button" class="btn btn-sm btn-primary fw-semibold" onclick="openAddICDModalFromSearch()">+ Thêm mới mã ICD</button>
+                                <small class="text-muted ms-2">Không thấy mã phù hợp thì thêm vào danh mục ICD.</small>
+                            </div>
+                            <small class="text-muted">Gõ để tìm nhanh hoặc bấm <b>+ Thêm mới</b> để bổ sung ICD vào danh mục.</small>
                         </div>
                         <div class="col-md-6"><label class="form-label fw-semibold">Bệnh kèm theo</label><input type="text" class="form-control" id="benhKemTheo" oninput="formatCapitalizeWords(this)"></div>
                         
@@ -427,7 +435,37 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
+<!-- Modal thêm nhanh ICD-10 khi không tìm thấy trong ô chẩn đoán -->
+<div class="modal fade" id="modalAddICD" tabindex="-1" aria-labelledby="modalAddICDLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="frmQuickICD">
+                <div class="modal-header" style="background:#f4f0ff;">
+                    <h5 class="modal-title fw-bold text-tab4" id="modalAddICDLabel">Thêm mới mã ICD-10</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mã ICD</label>
+                        <input type="text" class="form-control text-uppercase fw-bold" id="quickIcdCode" placeholder="Ví dụ: A09.0" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold">Tên bệnh</label>
+                        <input type="text" class="form-control" id="quickIcdName" placeholder="Nhập tên bệnh" required oninput="formatCapitalizeWords(this)">
+                    </div>
+                    <div class="alert alert-info py-2 mb-0 small">
+                        Sau khi lưu, mã này sẽ hiện trong tab <b>4. Quản lý danh mục ICD</b> và được tự điền vào ô chẩn đoán hiện tại.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="goToICDManagerFromModal()">Qua màn hình 4</button>
+                    <button type="submit" class="btn btn-primary fw-bold">Lưu ICD mới</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -670,29 +708,112 @@
 
     maICDInput.addEventListener('input', function() {
         const val = this.value.trim();
+        const quickAddBox = document.getElementById('icdQuickAddBox');
         icdSuggestions.innerHTML = '';
-        if (!val) { icdSuggestions.style.display = 'none'; return; }
+        if (!val) { 
+            icdSuggestions.style.display = 'none'; 
+            if (quickAddBox) quickAddBox.classList.add('d-none');
+            return; 
+        }
         const searchStr = normalizeText(val);
         const matches = icdList.filter(icd => normalizeText(icd.code).includes(searchStr) || normalizeText(icd.name).includes(searchStr));
 
         if (matches.length > 0) {
+            if (quickAddBox) quickAddBox.classList.add('d-none');
             matches.forEach(icd => {
                 const li = document.createElement('li');
                 li.innerHTML = `<span class="icd-code-highlight">${icd.code}</span> - ${icd.name}`;
-                li.addEventListener('click', function() { maICDInput.value = `${icd.code} - ${icd.name}`; icdSuggestions.style.display = 'none'; });
+                li.addEventListener('click', function() { 
+                    maICDInput.value = `${icd.code} - ${icd.name}`; 
+                    icdSuggestions.style.display = 'none'; 
+                    if (quickAddBox) quickAddBox.classList.add('d-none');
+                });
                 icdSuggestions.appendChild(li);
             });
             icdSuggestions.style.display = 'block';
         } else {
-            const li = document.createElement('li'); li.innerText = 'Không tìm thấy kết quả phù hợp';
-            li.style.color = '#6c757d'; li.style.pointerEvents = 'none';
-            icdSuggestions.appendChild(li); icdSuggestions.style.display = 'block';
+            if (quickAddBox) quickAddBox.classList.remove('d-none');
+            const li = document.createElement('li');
+            li.innerHTML = `<div class="text-muted mb-2">Không tìm thấy mã ICD phù hợp.</div><button type="button" class="btn btn-sm btn-primary fw-bold" onclick="openAddICDModalFromSearch()">+ Thêm mới mã ICD</button>`;
+            icdSuggestions.appendChild(li); 
+            icdSuggestions.style.display = 'block';
         }
     });
 
     document.addEventListener('click', function(e) {
-        if (e.target !== maICDInput && e.target !== icdSuggestions) icdSuggestions.style.display = 'none';
+        if (!e.target.closest('.icd-wrapper') && !e.target.closest('#icdQuickAddBox') && !e.target.closest('#modalAddICD')) {
+            icdSuggestions.style.display = 'none';
+        }
     });
+
+    function parseICDInputForNew(rawValue) {
+        const raw = (rawValue || '').trim();
+        if (!raw) return { code: '', name: '' };
+        if (raw.includes(' - ')) {
+            const parts = raw.split(' - ');
+            return { code: (parts[0] || '').trim().toUpperCase(), name: parts.slice(1).join(' - ').trim() };
+        }
+        const codeMatch = raw.match(/^[A-Za-z][0-9]{1,2}(?:\.[0-9A-Za-z]+)?/);
+        if (codeMatch) {
+            return { code: codeMatch[0].toUpperCase(), name: raw.slice(codeMatch[0].length).replace(/^\s*-\s*/, '').trim() };
+        }
+        return { code: '', name: raw };
+    }
+
+    function openAddICDModalFromSearch() {
+        const parsed = parseICDInputForNew(maICDInput.value);
+        document.getElementById('quickIcdCode').value = parsed.code;
+        document.getElementById('quickIcdName').value = parsed.name;
+        icdSuggestions.style.display = 'none';
+        const modalEl = document.getElementById('modalAddICD');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+        setTimeout(() => {
+            const focusEl = parsed.code ? document.getElementById('quickIcdName') : document.getElementById('quickIcdCode');
+            if (focusEl) focusEl.focus();
+        }, 250);
+    }
+
+    function saveICDFromValues(code, name, options = {}) {
+        const cleanCode = (code || '').trim().toUpperCase();
+        const cleanName = (name || '').trim();
+        if (!cleanCode || !cleanName) {
+            alert('Vui lòng nhập đủ Mã ICD và Tên bệnh.');
+            return false;
+        }
+        const existingIdx = icdList.findIndex(i => (i.code || '').toUpperCase() === cleanCode);
+        if (existingIdx >= 0) icdList[existingIdx].name = cleanName;
+        else icdList.push({ code: cleanCode, name: cleanName });
+        icdList.sort((a, b) => (a.code || '').localeCompare((b.code || ''), 'vi', { numeric: true }));
+        saveICDs();
+        renderICDs();
+        if (options.fillCurrentPatientInput) {
+            maICDInput.value = `${cleanCode} - ${cleanName}`;
+            const quickAddBox = document.getElementById('icdQuickAddBox');
+            if (quickAddBox) quickAddBox.classList.add('d-none');
+        }
+        return true;
+    }
+
+    document.getElementById('frmQuickICD').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const ok = saveICDFromValues(document.getElementById('quickIcdCode').value, document.getElementById('quickIcdName').value, { fillCurrentPatientInput: true });
+        if (!ok) return;
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAddICD'));
+        modal.hide();
+        this.reset();
+    });
+
+    function goToICDManagerFromModal() {
+        const code = document.getElementById('quickIcdCode').value.trim().toUpperCase();
+        const name = document.getElementById('quickIcdName').value.trim();
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAddICD'));
+        modal.hide();
+        document.getElementById('icdCode').value = code;
+        document.getElementById('icdName').value = name;
+        document.getElementById('nav-tab4').click();
+        setTimeout(() => document.getElementById(code ? 'icdName' : 'icdCode').focus(), 250);
+    }
 
     function calcCLS() {
         // Đã khôi phục ô tongCLS nên hàm này sẽ chạy bình thường
@@ -1126,7 +1247,16 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // Đã bỏ footer PDF vì jsPDF không hiển thị đúng tiếng Việt có dấu trong dòng bản quyền.
+    function appendPdfFooter(pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(9);
+            pdf.setTextColor(100);
+            pdf.text('Phần mềm Quản lý Bệnh nhân Khoa Truyền nhiễm', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 0.4, { align: 'center' });
+            pdf.text('Thiết kế và phát triển: Đặng Ngọc Văn - TTYT Lâm Đồng - KV Hàm Thuận Bắc', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 0.25, { align: 'center' });
+        }
+    }
 
     function exportPDFList() {
         const el = document.getElementById('printListArea');
@@ -1283,7 +1413,11 @@
         const tbody = document.getElementById('icdTableBody'); tbody.innerHTML = '';
         icdList.forEach((icd, idx) => { tbody.innerHTML += `<tr><td class="fw-bold">${icd.code}</td><td class="text-start">${icd.name}</td><td class="text-center"><button class="btn btn-sm btn-outline-danger" onclick="deleteICD(${idx})">Xóa</button></td></tr>`; });
     }
-    document.getElementById('frmICD').addEventListener('submit', function(e) { e.preventDefault(); const code = document.getElementById('icdCode').value.trim(); const name = document.getElementById('icdName').value.trim(); const eIdx = icdList.findIndex(i => i.code === code); if (eIdx >= 0) icdList[eIdx].name = name; else icdList.push({ code, name }); saveICDs(); this.reset(); renderICDs(); });
+    document.getElementById('frmICD').addEventListener('submit', function(e) { 
+        e.preventDefault(); 
+        const ok = saveICDFromValues(document.getElementById('icdCode').value, document.getElementById('icdName').value); 
+        if (ok) this.reset(); 
+    });
     function deleteICD(idx) { if(confirm('Xóa mã ICD này?')) { icdList.splice(idx, 1); saveICDs(); renderICDs(); } }
 
 </script>
